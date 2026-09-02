@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+
+from app.database.database import engine
 
 app = FastAPI(
     title="Cybatech Workforce API",
@@ -35,3 +38,20 @@ def health_check():
     return {
         "status": "healthy"
     }
+
+
+@app.get("/api/database-check")
+def database_check():
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+
+        return {
+            "database": "connected"
+        }
+
+    except Exception as error:
+        return {
+            "database": "connection failed",
+            "error": str(error)
+        }
