@@ -1,15 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
-
+from app.routers import auth
+# from fastapi import Depends
 from app.database.database import engine
+from app.core.dependencies import get_current_user
 
 app = FastAPI(
     title="Cybatech Workforce API",
     description="Location-aware workforce attendance management API",
     version="0.1.0"
 )
-
+# @app.get("/api/whoami")
+# def whoami(current_user: dict = Depends(get_current_user)):
+#     return {"you_are": current_user}
 origins = [
     "http://localhost:5173",
     "http://localhost:5174",
@@ -24,7 +28,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+app.include_router(auth.router)
 
 @app.get("/")
 def home():
