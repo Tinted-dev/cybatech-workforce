@@ -52,3 +52,14 @@ class User(Base):
         default=datetime.utcnow,
         nullable=False
     )
+    role: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+        default="employee"
+    )
+
+    must_change_password: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=True
+    )
