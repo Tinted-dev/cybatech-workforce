@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
-from app.routers import auth, employees, locations
+from app.routers import auth, employees, locations, attendance
 from app.database.database import engine
 
 app = FastAPI(
@@ -29,6 +29,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(employees.router)
 app.include_router(locations.router)
+app.include_router(attendance.router)
 
 
 @app.get("/")
