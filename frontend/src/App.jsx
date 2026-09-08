@@ -1,28 +1,28 @@
-import { useEffect, useState } from "react"
+import { Routes, Route } from "react-router-dom"
+import { useAuth } from "./context/AuthContext"
+import ProtectedRoute from "./components/ProtectedRoute"
+import LoginPage from "./pages/LoginPage"
+import EmployeeDashboard from "./pages/EmployeeDashboard"
+import AdminDashboard from "./pages/AdminDashboard"
+
+function Dashboard() {
+  const { user } = useAuth()
+  return user.role === "admin" ? <AdminDashboard /> : <EmployeeDashboard />
+}
 
 function App() {
-  const [message, setMessage] = useState("Loading...")
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/health")
-      .then((response) => response.json())
-      .then((data) => {
-        setMessage(data.status)
-      })
-      .catch((error) => {
-        console.error("Error connecting to API:", error)
-        setMessage("API connection failed")
-      })
-  }, [])
-
   return (
-    <main>
-      <h1>Cybatech Workforce</h1>
-
-      <p>
-        Backend status: {message}
-      </p>
-    </main>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   )
 }
 
