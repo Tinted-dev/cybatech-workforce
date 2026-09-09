@@ -7,6 +7,8 @@ from app.database.database import SessionLocal
 from app.models.attendance import Attendance
 from app.models.employee import Employee
 from app.models.location import Location
+from app.models.user import User
+from app.models.department import Department
 from app.schemas.attendance import ClockInRequest, ClockOutRequest, AttendanceResponse
 from app.core.dependencies import get_current_employee, require_admin
 
@@ -126,9 +128,22 @@ def list_attendance(
 ):
     organization_id = current_user["organization_id"]
 
-    return (
-        db.query(Attendance)
+    results = (
+        db.query(Attendance, User, Department)
+        .join(Employee, Attendance.employee_id == Employee.id)
+        .join(User, Employee.user_id == User.id)
+        .outerjoin(Department, Employee.department_id == Department.id)
         .filter(Attendance.organization_id == organization_id)
         .order_by(Attendance.clock_in_time.desc())
         .all()
     )
+
+    responses = []
+    for attendance, user, department in results:
+        response = AttendanceResponse.model_validate(attendance)
+        response.employee_full_name = user.full_name
+        response.employee_email = user.email
+        response.department_name = department.name if department else None
+        responses.append(response)
+
+    return responses

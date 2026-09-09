@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database.database import SessionLocal
 from app.models.location import Location
 from app.schemas.location import LocationCreateRequest, LocationUpdateRequest, LocationResponse
-from app.core.dependencies import require_admin
+from app.core.dependencies import require_admin, get_current_user
 
 router = APIRouter(prefix="/locations", tags=["locations"])
 
@@ -42,7 +42,7 @@ def create_location(
 @router.get("", response_model=list[LocationResponse])
 def list_locations(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(require_admin),
+    current_user: dict = Depends(get_current_user),
 ):
     organization_id = current_user["organization_id"]
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 import apiClient from "../api/client"
 import { useAuth } from "../context/AuthContext"
 import { toLocalDate } from "../utils/formatDate"
@@ -39,6 +40,10 @@ function AdminDashboard() {
       <div className="max-w-3xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-lg font-semibold text-slate-800">Admin Dashboard</h1>
+          <Link to="/employees" className="text-sm text-blue-600 ml-4">Manage Employees</Link>
+          <Link to="/locations" className="text-sm text-blue-600 ml-4">Manage Locations</Link>
+          <Link to="/attendance" className="text-sm text-blue-600 ml-4">View Attendance</Link>
+          <Link to="/departments" className="text-sm text-blue-600 ml-4">Manage Departments</Link>
           <button onClick={logout} className="text-sm text-slate-500">
             Log out
           </button>

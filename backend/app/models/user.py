@@ -30,6 +30,12 @@ class User(Base):
         index=True
     )
 
+    full_name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+        default=""
+    )
+
     hashed_password: Mapped[str] = mapped_column(
         String(255),
         nullable=False
@@ -47,19 +53,14 @@ class User(Base):
         default=True
     )
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False
-    )
-    role: Mapped[str] = mapped_column(
-        String(50),
-        nullable=False,
-        default="employee"
-    )
-
     must_change_password: Mapped[bool] = mapped_column(
         Boolean,
         nullable=False,
         default=True
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False
     )

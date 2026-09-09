@@ -6,14 +6,25 @@ import { toLocalDate } from "../utils/formatDate"
 function EmployeeDashboard() {
   const { logout } = useAuth()
   const [status, setStatus] = useState(null)
+  const [locations, setLocations] = useState([])
+  const [selectedLocationId, setSelectedLocationId] = useState("")
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
   const [error, setError] = useState("")
 
-  async function fetchStatus() {
+  async function loadInitialData() {
     try {
-      const response = await apiClient.get("/attendance/status")
-      setStatus(response.data)
+      const [statusRes, locationsRes] = await Promise.all([
+        apiClient.get("/attendance/status"),
+        apiClient.get("/locations"),
+      ])
+      setStatus(statusRes.data)
+
+      const activeLocations = locationsRes.data.filter((loc) => loc.is_active)
+      setLocations(activeLocations)
+      if (activeLocations.length > 0) {
+        setSelectedLocationId(activeLocations[0].id)
+      }
     } catch (err) {
       setError("Could not load your status")
     } finally {
@@ -21,23 +32,34 @@ function EmployeeDashboard() {
     }
   }
 
+  async function refreshStatus() {
+    const response = await apiClient.get("/attendance/status")
+    setStatus(response.data)
+  }
+
   useEffect(() => {
-    fetchStatus()
+    loadInitialData()
   }, [])
 
   function getLocationAndClockIn() {
     setError("")
+
+    if (!selectedLocationId) {
+      setError("Please select a location")
+      return
+    }
+
     setActionLoading(true)
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
           await apiClient.post("/attendance/clock-in", {
-            location_id: 1,
+            location_id: selectedLocationId,
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           })
-          await fetchStatus()
+          await refreshStatus()
         } catch (err) {
           setError(err.response?.data?.detail || "Clock-in failed")
         } finally {
@@ -62,7 +84,7 @@ function EmployeeDashboard() {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           })
-          await fetchStatus()
+          await refreshStatus()
         } catch (err) {
           setError(err.response?.data?.detail || "Clock-out failed")
         } finally {
@@ -106,6 +128,26 @@ function EmployeeDashboard() {
           )}
         </div>
 
+        {!isClockedIn && (
+          <div className="mb-4">
+            <label className="block text-sm text-slate-600 mb-1">Location</label>
+            <select
+              value={selectedLocationId}
+              onChange={(e) => setSelectedLocationId(e.target.value)}
+              className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+            >
+              {locations.length === 0 && (
+                <option value="">No locations available</option>
+              )}
+              {locations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {isClockedIn ? (
           <button
             onClick={getLocationAndClockOut}
@@ -117,7 +159,7 @@ function EmployeeDashboard() {
         ) : (
           <button
             onClick={getLocationAndClockIn}
-            disabled={actionLoading}
+            disabled={actionLoading || locations.length === 0}
             className="w-full bg-slate-800 text-white rounded py-3 font-medium disabled:opacity-50"
           >
             {actionLoading ? "Clocking in..." : "Clock In"}

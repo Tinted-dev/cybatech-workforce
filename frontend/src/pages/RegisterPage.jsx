@@ -2,13 +2,14 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 
-function LoginPage() {
+function RegisterPage() {
+  const [organizationName, setOrganizationName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const { login } = useAuth()
+  const { register } = useAuth()
   const navigate = useNavigate()
 
   async function handleSubmit(event) {
@@ -17,10 +18,10 @@ function LoginPage() {
     setLoading(true)
 
     try {
-      await login(email, password)
+      await register(organizationName, email, password)
       navigate("/")
     } catch (err) {
-      setError("Invalid email or password")
+      setError(err.response?.data?.detail || "Registration failed")
     } finally {
       setLoading(false)
     }
@@ -33,14 +34,25 @@ function LoginPage() {
         className="bg-white p-8 rounded-lg shadow-sm w-full max-w-sm"
       >
         <h1 className="text-xl font-semibold text-slate-800 mb-6">
-          Cybatech Workforce
+          Register Your Company
         </h1>
 
-        {error && (
-          <p className="text-sm text-red-600 mb-4">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
 
-        <label className="block text-sm text-slate-600 mb-1">Email</label>
+        <label className="block text-sm text-slate-600 mb-1">
+          Company Name
+        </label>
+        <input
+          type="text"
+          value={organizationName}
+          onChange={(e) => setOrganizationName(e.target.value)}
+          className="w-full border border-slate-300 rounded px-3 py-2 mb-4 text-sm"
+          required
+        />
+
+        <label className="block text-sm text-slate-600 mb-1">
+          Admin Email
+        </label>
         <input
           type="email"
           value={email}
@@ -63,13 +75,13 @@ function LoginPage() {
           disabled={loading}
           className="w-full bg-slate-800 text-white rounded py-2 text-sm font-medium disabled:opacity-50"
         >
-          {loading ? "Logging in..." : "Log in"}
+          {loading ? "Creating account..." : "Register"}
         </button>
 
         <p className="text-sm text-slate-500 mt-4 text-center">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600">
-            Register your company
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600">
+            Log in
           </Link>
         </p>
       </form>
@@ -77,4 +89,4 @@ function LoginPage() {
   )
 }
 
-export default LoginPage
+export default RegisterPage

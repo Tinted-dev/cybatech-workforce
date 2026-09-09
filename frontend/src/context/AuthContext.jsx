@@ -26,13 +26,24 @@ export function AuthProvider({ children }) {
     setUser(decodeToken(token))
   }
 
+  async function register(organizationName, email, password) {
+    const response = await apiClient.post("/auth/register", {
+      organization_name: organizationName,
+      email,
+      password,
+    })
+    const token = response.data.access_token
+    localStorage.setItem("access_token", token)
+    setUser(decodeToken(token))
+  }
+
   function logout() {
     localStorage.removeItem("access_token")
     setUser(null)
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   )

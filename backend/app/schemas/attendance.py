@@ -17,6 +17,9 @@ class ClockOutRequest(BaseModel):
 class AttendanceResponse(BaseModel):
     id: int
     employee_id: int
+    employee_full_name: str | None = None
+    employee_email: str | None = None
+    department_name: str | None = None
     organization_id: int
     location_id: int
     clock_in_time: datetime

@@ -13,3 +13,5 @@ if not DATABASE_URL:
 
 if not JWT_SECRET_KEY:
     raise ValueError("JWT_SECRET_KEY is not set in .env")
+
+ALLOW_REGISTRATION = os.getenv("ALLOW_REGISTRATION", "true").lower() == "true"

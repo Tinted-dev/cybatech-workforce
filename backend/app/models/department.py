@@ -1,24 +1,17 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
 
 
-class Employee(Base):
-    __tablename__ = "employees"
+class Department(Base):
+    __tablename__ = "departments"
 
     id: Mapped[int] = mapped_column(
         Integer,
         primary_key=True,
-        index=True
-    )
-
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"),
-        nullable=False,
-        unique=True,
         index=True
     )
 
@@ -28,10 +21,9 @@ class Employee(Base):
         index=True
     )
 
-    department_id: Mapped[int | None] = mapped_column(
-        ForeignKey("departments.id"),
-        nullable=True,
-        index=True
+    name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False
     )
 
     is_active: Mapped[bool] = mapped_column(
