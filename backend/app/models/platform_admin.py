@@ -6,8 +6,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.database.base import Base
 
 
-class Organization(Base):
-    __tablename__ = "organizations"
+class PlatformAdmin(Base):
+    __tablename__ = "platform_admins"
 
     id: Mapped[int] = mapped_column(
         Integer,
@@ -15,7 +15,14 @@ class Organization(Base):
         index=True
     )
 
-    name: Mapped[str] = mapped_column(
+    email: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+        unique=True,
+        index=True
+    )
+
+    hashed_password: Mapped[str] = mapped_column(
         String(255),
         nullable=False
     )

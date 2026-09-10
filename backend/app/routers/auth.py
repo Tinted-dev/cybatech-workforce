@@ -37,6 +37,14 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
             detail="Invalid email or password",
         )
 
+    organization = db.query(Organization).filter(Organization.id == user.organization_id).first()
+
+    if not organization or not organization.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This organization's account has been suspended",
+        )
+
     token = create_access_token({
         "user_id": user.id,
         "organization_id": user.organization_id,

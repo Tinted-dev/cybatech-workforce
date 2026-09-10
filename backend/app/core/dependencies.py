@@ -62,3 +62,25 @@ def get_current_employee(
         )
 
     return employee    
+
+
+platform_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/platform/login")
+
+
+def require_platform_admin(token: str = Depends(platform_oauth2_scheme)) -> dict:
+    try:
+        payload = decode_access_token(token)
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if payload.get("type") != "platform":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Platform admin access required",
+        )
+
+    return payload

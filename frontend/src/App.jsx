@@ -10,6 +10,8 @@ import EmployeesPage from "./pages/EmployeesPage"
 import LocationsPage from "./pages/LocationsPage"
 import AttendancePage from "./pages/AttendancePage"
 import DepartmentsPage from "./pages/DepartmentsPage"
+import PlatformLoginPage from "./pages/PlatformLoginPage"
+import PlatformOrganizationsPage from "./pages/PlatformOrganizationsPage"
 
 function Dashboard() {
   const { user } = useAuth()
@@ -69,6 +71,8 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/platform/login" element={<PlatformLoginPage />} />
+      <Route path="/platform/organizations" element={<PlatformOrganizationsPage />} />
     </Routes>
   )
 }
