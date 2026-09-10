@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -125,18 +125,35 @@ def clock_status(
 def list_attendance(
     db: Session = Depends(get_db),
     current_user: dict = Depends(require_admin),
+    start_date: date | None = None,
+    end_date: date | None = None,
+    employee_id: int | None = None,
+    location_id: int | None = None,
 ):
     organization_id = current_user["organization_id"]
 
-    results = (
+    query = (
         db.query(Attendance, User, Department)
         .join(Employee, Attendance.employee_id == Employee.id)
         .join(User, Employee.user_id == User.id)
         .outerjoin(Department, Employee.department_id == Department.id)
         .filter(Attendance.organization_id == organization_id)
-        .order_by(Attendance.clock_in_time.desc())
-        .all()
     )
+
+    if start_date is not None:
+        query = query.filter(Attendance.clock_in_time >= start_date)
+
+    if end_date is not None:
+        end_of_day = datetime.combine(end_date, datetime.max.time())
+        query = query.filter(Attendance.clock_in_time <= end_of_day)
+
+    if employee_id is not None:
+        query = query.filter(Attendance.employee_id == employee_id)
+
+    if location_id is not None:
+        query = query.filter(Attendance.location_id == location_id)
+
+    results = query.order_by(Attendance.clock_in_time.desc()).all()
 
     responses = []
     for attendance, user, department in results:
