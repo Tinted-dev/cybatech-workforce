@@ -32,6 +32,7 @@ def build_employee_response(employee: Employee, user: User, department: Departme
         must_change_password=user.must_change_password,
         department_id=employee.department_id,
         department_name=department.name if department else None,
+        has_registered_device=employee.registered_device_id is not None,
         created_at=employee.created_at,
     )
 
@@ -188,5 +189,33 @@ def update_employee(
 
     if employee.department_id and not department:
         department = db.query(Department).filter(Department.id == employee.department_id).first()
+
+    return build_employee_response(employee, user, department)
+
+
+@router.post("/{employee_id}/reset-device", response_model=EmployeeResponse)
+def reset_employee_device(
+    employee_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_admin),
+):
+    organization_id = current_user["organization_id"]
+
+    result = (
+        db.query(Employee, User, Department)
+        .join(User, Employee.user_id == User.id)
+        .outerjoin(Department, Employee.department_id == Department.id)
+        .filter(Employee.id == employee_id, Employee.organization_id == organization_id)
+        .first()
+    )
+
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
+
+    employee, user, department = result
+
+    employee.registered_device_id = None
+    db.commit()
+    db.refresh(employee)
 
     return build_employee_response(employee, user, department)

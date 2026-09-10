@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -32,6 +32,11 @@ class Employee(Base):
         ForeignKey("departments.id"),
         nullable=True,
         index=True
+    )
+
+    registered_device_id: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True
     )
 
     is_active: Mapped[bool] = mapped_column(

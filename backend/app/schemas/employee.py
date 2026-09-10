@@ -42,6 +42,7 @@ class EmployeeResponse(BaseModel):
     must_change_password: bool
     department_id: int | None
     department_name: str | None
+    has_registered_device: bool
     created_at: datetime
 
     class Config:

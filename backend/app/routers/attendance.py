@@ -45,6 +45,18 @@ def clock_in(
             detail="You are already clocked in. Clock out before clocking in again.",
         )
 
+    employee_record = db.query(Employee).filter(Employee.id == current_employee.id).first()
+
+    if employee_record.registered_device_id is None:
+        employee_record.registered_device_id = payload.device_id
+        db.commit()
+        db.refresh(employee_record)
+    elif employee_record.registered_device_id != payload.device_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This device is not registered to your account. Ask your admin to reset your device.",
+        )
+
     location = (
         db.query(Location)
         .filter(
@@ -97,6 +109,15 @@ def clock_out(
     db: Session = Depends(get_db),
     current_employee: Employee = Depends(get_current_employee),
 ):
+    if (
+        current_employee.registered_device_id is not None
+        and current_employee.registered_device_id != payload.device_id
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This device is not registered to your account. Ask your admin to reset your device.",
+        )
+
     open_shift = (
         db.query(Attendance)
         .filter(

@@ -7,11 +7,13 @@ class ClockInRequest(BaseModel):
     location_id: int
     latitude: Decimal
     longitude: Decimal
+    device_id: str
 
 
 class ClockOutRequest(BaseModel):
     latitude: Decimal
     longitude: Decimal
+    device_id: str
 
 
 class AttendanceResponse(BaseModel):
