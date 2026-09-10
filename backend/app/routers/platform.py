@@ -6,8 +6,14 @@ from app.database.database import SessionLocal
 from app.models.platform_admin import PlatformAdmin
 from app.models.organization import Organization
 from app.models.employee import Employee
-from app.schemas.platform import PlatformLoginRequest, PlatformTokenResponse, OrganizationSummary
-from app.core.security import verify_password, create_access_token
+from app.models.user import User
+from app.schemas.platform import (
+    PlatformLoginRequest,
+    PlatformTokenResponse,
+    OrganizationSummary,
+    CreateOrganizationRequest,
+)
+from app.core.security import verify_password, create_access_token, hash_password
 from app.core.dependencies import require_platform_admin
 
 router = APIRouter(prefix="/platform", tags=["platform"])
@@ -68,6 +74,45 @@ def list_organizations(
         )
         for org, count in results
     ]
+
+
+@router.post("/organizations", response_model=OrganizationSummary, status_code=status.HTTP_201_CREATED)
+def create_organization(
+    payload: CreateOrganizationRequest,
+    db: Session = Depends(get_db),
+    _: dict = Depends(require_platform_admin),
+):
+    existing = db.query(User).filter(User.email == payload.admin_email).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A user with this email already exists",
+        )
+
+    new_org = Organization(name=payload.organization_name, is_active=True)
+    db.add(new_org)
+    db.commit()
+    db.refresh(new_org)
+
+    admin_user = User(
+        organization_id=new_org.id,
+        email=payload.admin_email,
+        full_name="",
+        hashed_password=hash_password(payload.admin_password),
+        role="admin",
+        is_active=True,
+        must_change_password=True,
+    )
+    db.add(admin_user)
+    db.commit()
+
+    return OrganizationSummary(
+        id=new_org.id,
+        name=new_org.name,
+        is_active=new_org.is_active,
+        employee_count=0,
+        created_at=new_org.created_at,
+    )
 
 
 @router.put("/organizations/{organization_id}", response_model=OrganizationSummary)

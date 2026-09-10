@@ -7,12 +7,14 @@ class LocationCreateRequest(BaseModel):
     name: str
     latitude: Decimal
     longitude: Decimal
+    allowed_radius_meters: int = 100
 
 
 class LocationUpdateRequest(BaseModel):
     name: str | None = None
     latitude: Decimal | None = None
     longitude: Decimal | None = None
+    allowed_radius_meters: int | None = None
     is_active: bool | None = None
 
 
@@ -22,6 +24,7 @@ class LocationResponse(BaseModel):
     name: str
     latitude: Decimal
     longitude: Decimal
+    allowed_radius_meters: int
     is_active: bool
     created_at: datetime
 

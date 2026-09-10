@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import platformApiClient from "../api/platformClient"
+import { getErrorMessage } from "../utils/getErrorMessage"
 
 function PlatformOrganizationsPage() {
   const navigate = useNavigate()
@@ -8,6 +9,14 @@ function PlatformOrganizationsPage() {
   const [organizations, setOrganizations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+
+  const [showForm, setShowForm] = useState(false)
+  const [orgName, setOrgName] = useState("")
+  const [adminEmail, setAdminEmail] = useState("")
+  const [adminPassword, setAdminPassword] = useState("")
+  const [formError, setFormError] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+  const [successInfo, setSuccessInfo] = useState(null)
 
   async function fetchOrganizations() {
     try {
@@ -40,6 +49,31 @@ function PlatformOrganizationsPage() {
     }
   }
 
+  async function handleCreate(event) {
+    event.preventDefault()
+    setFormError("")
+    setSuccessInfo(null)
+    setSubmitting(true)
+
+    try {
+      await platformApiClient.post("/platform/organizations", {
+        organization_name: orgName,
+        admin_email: adminEmail,
+        admin_password: adminPassword,
+      })
+      setSuccessInfo({ email: adminEmail, password: adminPassword })
+      setOrgName("")
+      setAdminEmail("")
+      setAdminPassword("")
+      setShowForm(false)
+      await fetchOrganizations()
+    } catch (err) {
+      setFormError(getErrorMessage(err, "Could not create organization"))
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   function logout() {
     localStorage.removeItem("platform_access_token")
     navigate("/platform/login")
@@ -62,6 +96,67 @@ function PlatformOrganizationsPage() {
         </div>
 
         {error && <p className="text-sm text-red-400 mb-4">{error}</p>}
+
+        {successInfo && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 text-sm">
+            <p className="font-medium text-green-800">Organization created.</p>
+            <p className="text-green-700 mt-1">
+              Send these credentials to the customer — they'll be required to
+              change the password on first login:
+            </p>
+            <p className="text-green-800 mt-2 font-mono">
+              Email: {successInfo.email}
+              <br />
+              Temporary password: {successInfo.password}
+            </p>
+          </div>
+        )}
+
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="text-sm font-medium text-slate-800"
+          >
+            {showForm ? "Cancel" : "+ Create Organization"}
+          </button>
+
+          {showForm && (
+            <form onSubmit={handleCreate} className="mt-4 space-y-3">
+              {formError && <p className="text-sm text-red-600">{formError}</p>}
+              <input
+                type="text"
+                placeholder="Organization name"
+                value={orgName}
+                onChange={(e) => setOrgName(e.target.value)}
+                className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                required
+              />
+              <input
+                type="email"
+                placeholder="Admin email"
+                value={adminEmail}
+                onChange={(e) => setAdminEmail(e.target.value)}
+                className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Temporary password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                required
+              />
+              <button
+                type="submit"
+                disabled={submitting}
+                className="bg-slate-800 text-white rounded px-4 py-2 text-sm disabled:opacity-50"
+              >
+                {submitting ? "Creating..." : "Create Organization"}
+              </button>
+            </form>
+          )}
+        </div>
 
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <table className="w-full text-sm">

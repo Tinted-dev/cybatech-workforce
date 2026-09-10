@@ -30,6 +30,7 @@ def create_location(
         name=payload.name,
         latitude=payload.latitude,
         longitude=payload.longitude,
+        allowed_radius_meters=payload.allowed_radius_meters,
         is_active=True,
     )
     db.add(new_location)
@@ -93,6 +94,8 @@ def update_location(
         location.latitude = payload.latitude
     if payload.longitude is not None:
         location.longitude = payload.longitude
+    if payload.allowed_radius_meters is not None:
+        location.allowed_radius_meters = payload.allowed_radius_meters
     if payload.is_active is not None:
         location.is_active = payload.is_active
 

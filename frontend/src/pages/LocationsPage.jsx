@@ -16,6 +16,7 @@ function LocationsPage() {
   const [name, setName] = useState("")
   const [latitude, setLatitude] = useState("")
   const [longitude, setLongitude] = useState("")
+  const [radius, setRadius] = useState("100")
   const [formError, setFormError] = useState("")
   const [submitting, setSubmitting] = useState(false)
 
@@ -40,6 +41,7 @@ function LocationsPage() {
 
     const parsedLatitude = parseFloat(latitude)
     const parsedLongitude = parseFloat(longitude)
+    const parsedRadius = parseInt(radius, 10)
 
     if (Number.isNaN(parsedLatitude)) {
       setFormError("Latitude must be a valid number, e.g. -1.286389")
@@ -51,6 +53,11 @@ function LocationsPage() {
       return
     }
 
+    if (Number.isNaN(parsedRadius) || parsedRadius <= 0) {
+      setFormError("Radius must be a positive whole number of meters")
+      return
+    }
+
     setSubmitting(true)
 
     try {
@@ -58,10 +65,12 @@ function LocationsPage() {
         name,
         latitude: parsedLatitude,
         longitude: parsedLongitude,
+        allowed_radius_meters: parsedRadius,
       })
       setName("")
       setLatitude("")
       setLongitude("")
+      setRadius("100")
       setShowForm(false)
       await fetchLocations()
     } catch (err) {
@@ -143,6 +152,20 @@ function LocationsPage() {
                 className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
                 required
               />
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">
+                  Allowed radius (meters) — how far an employee can be from
+                  this point and still clock in
+                </label>
+                <input
+                  type="text"
+                  placeholder="100"
+                  value={radius}
+                  onChange={(e) => setRadius(e.target.value)}
+                  className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                  required
+                />
+              </div>
               <button
                 type="submit"
                 disabled={submitting}
@@ -166,7 +189,8 @@ function LocationsPage() {
                     {location.name}
                   </p>
                   <p className="text-xs text-slate-500">
-                    {location.latitude}, {location.longitude} —{" "}
+                    {location.latitude}, {location.longitude} — radius{" "}
+                    {location.allowed_radius_meters}m —{" "}
                     {location.is_active ? "Active" : "Deactivated"}
                   </p>
                 </div>

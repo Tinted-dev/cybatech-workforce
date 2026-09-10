@@ -21,3 +21,9 @@ class OrganizationSummary(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class CreateOrganizationRequest(BaseModel):
+    organization_name: str
+    admin_email: EmailStr
+    admin_password: str

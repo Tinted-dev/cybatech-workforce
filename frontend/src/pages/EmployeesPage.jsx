@@ -22,6 +22,13 @@ function EmployeesPage() {
   const [formError, setFormError] = useState("")
   const [submitting, setSubmitting] = useState(false)
 
+  const [editingId, setEditingId] = useState(null)
+  const [editFullName, setEditFullName] = useState("")
+  const [editRole, setEditRole] = useState("employee")
+  const [editDepartmentId, setEditDepartmentId] = useState("")
+  const [editError, setEditError] = useState("")
+  const [editSubmitting, setEditSubmitting] = useState(false)
+
   async function loadData() {
     try {
       const [employeesRes, departmentsRes] = await Promise.all([
@@ -76,6 +83,39 @@ function EmployeesPage() {
       await loadData()
     } catch (err) {
       setError("Could not update employee")
+    }
+  }
+
+  function startEdit(employee) {
+    setEditingId(employee.id)
+    setEditFullName(employee.full_name || "")
+    setEditRole(employee.role)
+    setEditDepartmentId(employee.department_id ? String(employee.department_id) : "")
+    setEditError("")
+  }
+
+  function cancelEdit() {
+    setEditingId(null)
+    setEditError("")
+  }
+
+  async function handleEditSubmit(event, employeeId) {
+    event.preventDefault()
+    setEditError("")
+    setEditSubmitting(true)
+
+    try {
+      await apiClient.put(`/employees/${employeeId}`, {
+        full_name: editFullName,
+        role: editRole,
+        department_id: editDepartmentId ? Number(editDepartmentId) : null,
+      })
+      setEditingId(null)
+      await loadData()
+    } catch (err) {
+      setEditError(getErrorMessage(err, "Could not update employee"))
+    } finally {
+      setEditSubmitting(false)
     }
   }
 
@@ -174,31 +214,92 @@ function EmployeesPage() {
         <div className="bg-white rounded-lg shadow-sm">
           <ul className="divide-y divide-slate-100">
             {employees.map((employee) => (
-              <li
-                key={employee.id}
-                className="flex justify-between items-center p-4"
-              >
-                <div>
-                  <p className="text-sm font-medium text-slate-800">
-                    {employee.full_name || employee.email}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {employee.email} — {employee.role}
-                    {employee.department_name ? ` — ${employee.department_name}` : ""}
-                    {" — "}
-                    {employee.is_active ? "Active" : "Deactivated"}
-                  </p>
-                </div>
-                <button
-                  onClick={() => toggleActive(employee)}
-                  className={`text-xs rounded px-3 py-1 ${
-                    employee.is_active
-                      ? "bg-red-50 text-red-600"
-                      : "bg-green-50 text-green-600"
-                  }`}
-                >
-                  {employee.is_active ? "Deactivate" : "Reactivate"}
-                </button>
+              <li key={employee.id} className="p-4">
+                {editingId === employee.id ? (
+                  <form
+                    onSubmit={(e) => handleEditSubmit(e, employee.id)}
+                    className="space-y-3"
+                  >
+                    {editError && (
+                      <p className="text-sm text-red-600">{editError}</p>
+                    )}
+                    <input
+                      type="text"
+                      placeholder="Full name"
+                      value={editFullName}
+                      onChange={(e) => setEditFullName(e.target.value)}
+                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                    />
+                    <select
+                      value={editRole}
+                      onChange={(e) => setEditRole(e.target.value)}
+                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                    >
+                      <option value="employee">Employee</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    <select
+                      value={editDepartmentId}
+                      onChange={(e) => setEditDepartmentId(e.target.value)}
+                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
+                    >
+                      <option value="">No department</option>
+                      {departments.map((department) => (
+                        <option key={department.id} value={department.id}>
+                          {department.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="flex gap-2">
+                      <button
+                        type="submit"
+                        disabled={editSubmitting}
+                        className="bg-slate-800 text-white rounded px-4 py-1.5 text-sm disabled:opacity-50"
+                      >
+                        {editSubmitting ? "Saving..." : "Save"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelEdit}
+                        className="text-sm text-slate-500"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">
+                        {employee.full_name || employee.email}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {employee.email} — {employee.role}
+                        {employee.department_name ? ` — ${employee.department_name}` : ""}
+                        {" — "}
+                        {employee.is_active ? "Active" : "Deactivated"}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => startEdit(employee)}
+                        className="text-xs rounded px-3 py-1 bg-slate-100 text-slate-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => toggleActive(employee)}
+                        className={`text-xs rounded px-3 py-1 ${
+                          employee.is_active
+                            ? "bg-red-50 text-red-600"
+                            : "bg-green-50 text-green-600"
+                        }`}
+                      >
+                        {employee.is_active ? "Deactivate" : "Reactivate"}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

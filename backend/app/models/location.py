@@ -36,6 +36,12 @@ class Location(Base):
         nullable=False
     )
 
+    allowed_radius_meters: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=100
+    )
+
     is_active: Mapped[bool] = mapped_column(
         Boolean,
         nullable=False,

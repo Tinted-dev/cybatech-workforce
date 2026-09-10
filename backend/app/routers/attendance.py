@@ -11,6 +11,7 @@ from app.models.user import User
 from app.models.department import Department
 from app.schemas.attendance import ClockInRequest, ClockOutRequest, AttendanceResponse
 from app.core.dependencies import get_current_employee, require_admin
+from app.core.geo import distance_meters
 
 router = APIRouter(prefix="/attendance", tags=["attendance"])
 
@@ -57,6 +58,22 @@ def clock_in(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Location not found",
+        )
+
+    distance = distance_meters(
+        location.latitude,
+        location.longitude,
+        payload.latitude,
+        payload.longitude,
+    )
+
+    if distance > location.allowed_radius_meters:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                f"You are {int(distance)}m away from {location.name}. "
+                f"You must be within {location.allowed_radius_meters}m to clock in."
+            ),
         )
 
     new_attendance = Attendance(
