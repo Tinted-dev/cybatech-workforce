@@ -89,22 +89,32 @@ def create_organization(
             detail="A user with this email already exists",
         )
 
-    new_org = Organization(name=payload.organization_name, is_active=True)
-    db.add(new_org)
-    db.commit()
-    db.refresh(new_org)
+    try:
+        new_org = Organization(name=payload.organization_name, is_active=True)
+        db.add(new_org)
+        db.flush()
 
-    admin_user = User(
-        organization_id=new_org.id,
-        email=payload.admin_email,
-        full_name="",
-        hashed_password=hash_password(payload.admin_password),
-        role="admin",
-        is_active=True,
-        must_change_password=True,
-    )
-    db.add(admin_user)
-    db.commit()
+        admin_user = User(
+            organization_id=new_org.id,
+            email=payload.admin_email,
+            full_name="",
+            hashed_password=hash_password(payload.admin_password),
+            role="admin",
+            is_active=True,
+            must_change_password=True,
+        )
+        db.add(admin_user)
+        db.flush()
+
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not create organization. No changes were saved.",
+        )
+
+    db.refresh(new_org)
 
     return OrganizationSummary(
         id=new_org.id,

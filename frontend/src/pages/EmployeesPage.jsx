@@ -29,6 +29,8 @@ function EmployeesPage() {
   const [editError, setEditError] = useState("")
   const [editSubmitting, setEditSubmitting] = useState(false)
 
+  const [resettingId, setResettingId] = useState(null)
+
   async function loadData() {
     try {
       const [employeesRes, departmentsRes] = await Promise.all([
@@ -116,6 +118,18 @@ function EmployeesPage() {
       setEditError(getErrorMessage(err, "Could not update employee"))
     } finally {
       setEditSubmitting(false)
+    }
+  }
+
+  async function handleResetDevice(employeeId) {
+    setResettingId(employeeId)
+    try {
+      await apiClient.post(`/employees/${employeeId}/reset-device`)
+      await loadData()
+    } catch (err) {
+      setError("Could not reset device")
+    } finally {
+      setResettingId(null)
     }
   }
 
@@ -278,6 +292,8 @@ function EmployeesPage() {
                         {employee.department_name ? ` — ${employee.department_name}` : ""}
                         {" — "}
                         {employee.is_active ? "Active" : "Deactivated"}
+                        {" — "}
+                        {employee.has_registered_device ? "Device bound" : "No device"}
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -287,6 +303,15 @@ function EmployeesPage() {
                       >
                         Edit
                       </button>
+                      {employee.has_registered_device && (
+                        <button
+                          onClick={() => handleResetDevice(employee.id)}
+                          disabled={resettingId === employee.id}
+                          className="text-xs rounded px-3 py-1 bg-amber-50 text-amber-700 disabled:opacity-50"
+                        >
+                          {resettingId === employee.id ? "Resetting..." : "Reset Device"}
+                        </button>
+                      )}
                       <button
                         onClick={() => toggleActive(employee)}
                         className={`text-xs rounded px-3 py-1 ${

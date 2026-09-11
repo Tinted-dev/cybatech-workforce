@@ -63,21 +63,31 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
             detail="Registration is currently closed",
         )
 
-    new_org = Organization(name=payload.organization_name)
-    db.add(new_org)
-    db.commit()
-    db.refresh(new_org)
+    try:
+        new_org = Organization(name=payload.organization_name)
+        db.add(new_org)
+        db.flush()
 
-    new_user = User(
-        organization_id=new_org.id,
-        email=payload.email,
-        hashed_password=hash_password(payload.password),
-        role="admin",
-        is_active=True,
-        must_change_password=False,
-    )
-    db.add(new_user)
-    db.commit()
+        new_user = User(
+            organization_id=new_org.id,
+            email=payload.email,
+            hashed_password=hash_password(payload.password),
+            role="admin",
+            is_active=True,
+            must_change_password=False,
+        )
+        db.add(new_user)
+        db.flush()
+
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not complete registration. No changes were saved.",
+        )
+
+    db.refresh(new_org)
     db.refresh(new_user)
 
     token = create_access_token({

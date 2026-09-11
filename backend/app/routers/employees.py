@@ -69,27 +69,37 @@ def create_employee(
                 detail="Department not found",
             )
 
-    new_user = User(
-        organization_id=organization_id,
-        email=payload.email,
-        full_name=payload.full_name,
-        hashed_password=hash_password(payload.password),
-        role=payload.role,
-        is_active=True,
-        must_change_password=True,
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        new_user = User(
+            organization_id=organization_id,
+            email=payload.email,
+            full_name=payload.full_name,
+            hashed_password=hash_password(payload.password),
+            role=payload.role,
+            is_active=True,
+            must_change_password=True,
+        )
+        db.add(new_user)
+        db.flush()
 
-    new_employee = Employee(
-        user_id=new_user.id,
-        organization_id=organization_id,
-        department_id=payload.department_id,
-        is_active=True,
-    )
-    db.add(new_employee)
-    db.commit()
+        new_employee = Employee(
+            user_id=new_user.id,
+            organization_id=organization_id,
+            department_id=payload.department_id,
+            is_active=True,
+        )
+        db.add(new_employee)
+        db.flush()
+
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not create employee. No changes were saved.",
+        )
+
+    db.refresh(new_user)
     db.refresh(new_employee)
 
     return build_employee_response(new_employee, new_user, department)

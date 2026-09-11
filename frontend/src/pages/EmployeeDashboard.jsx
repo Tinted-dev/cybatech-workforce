@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import apiClient from "../api/client"
 import { useAuth } from "../context/AuthContext"
 import { toLocalDate } from "../utils/formatDate"
+import { getDeviceId } from "../utils/deviceId"
+import { getErrorMessage } from "../utils/getErrorMessage"
 
 function EmployeeDashboard() {
   const { logout } = useAuth()
@@ -58,10 +60,11 @@ function EmployeeDashboard() {
             location_id: selectedLocationId,
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
+            device_id: getDeviceId(),
           })
           await refreshStatus()
         } catch (err) {
-          setError(err.response?.data?.detail || "Clock-in failed")
+          setError(getErrorMessage(err, "Clock-in failed"))
         } finally {
           setActionLoading(false)
         }
@@ -83,10 +86,11 @@ function EmployeeDashboard() {
           await apiClient.post("/attendance/clock-out", {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
+            device_id: getDeviceId(),
           })
           await refreshStatus()
         } catch (err) {
-          setError(err.response?.data?.detail || "Clock-out failed")
+          setError(getErrorMessage(err, "Clock-out failed"))
         } finally {
           setActionLoading(false)
         }
