@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom"
 import { useAuth } from "./context/AuthContext"
 import ProtectedRoute from "./components/ProtectedRoute"
+import LandingPage from "./pages/LandingPage"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import ChangePasswordPage from "./pages/ChangePasswordPage"
@@ -21,6 +22,7 @@ function Dashboard() {
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route
@@ -32,7 +34,7 @@ function App() {
         }
       />
       <Route
-        path="/"
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <Dashboard />

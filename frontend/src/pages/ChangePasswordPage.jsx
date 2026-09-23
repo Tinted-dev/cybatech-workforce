@@ -22,7 +22,7 @@ function ChangePasswordPage() {
         new_password: newPassword,
       })
       localStorage.setItem("access_token", response.data.access_token)
-      window.location.href = "/"
+      window.location.href = "/dashboard"
     } catch (err) {
       setError(getErrorMessage(err, "Could not change password"))
     } finally {

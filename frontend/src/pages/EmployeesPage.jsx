@@ -143,7 +143,7 @@ function EmployeesPage() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/dashboard")}
               className="text-sm text-slate-500 mb-2"
             >
               &larr; Back to dashboard
