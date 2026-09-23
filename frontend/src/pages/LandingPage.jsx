@@ -127,9 +127,17 @@ function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-300 py-8">
-        <div className="max-w-5xl mx-auto px-6 text-center text-sm">
-          <p>Cybatech Workforce — a product of Cybatech Solutions</p>
+      <footer className="bg-slate-900 text-slate-300 py-10">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <p className="text-sm mb-3">Cybatech Workforce — a product of Cybatech Solutions</p>
+          <div className="flex justify-center gap-6 text-sm">
+            <a href="mailto:info@cybatech.co.ke" className="text-slate-300 hover:text-white">
+              info@cybatech.co.ke
+            </a>
+            <a href="tel:+25429698288" className="text-slate-300 hover:text-white">
+              +254 29698288
+            </a>
+          </div>
         </div>
       </footer>
     </main>
