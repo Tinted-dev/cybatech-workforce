@@ -108,7 +108,7 @@ function LandingPage() {
           </p>
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-8">
             <p className="text-4xl font-bold text-slate-800 mb-1">
-              KES 100
+              KES 250
               <span className="text-base font-normal text-slate-500">
                 {" "}/ employee / month
               </span>
