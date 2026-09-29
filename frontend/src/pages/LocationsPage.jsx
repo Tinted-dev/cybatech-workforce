@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import apiClient from "../api/client"
 import { getErrorMessage } from "../utils/getErrorMessage"
 import { useAuth } from "../context/AuthContext"
@@ -16,7 +16,6 @@ function LocationsPage() {
   const [name, setName] = useState("")
   const [latitude, setLatitude] = useState("")
   const [longitude, setLongitude] = useState("")
-  const [radius, setRadius] = useState("100")
   const [formError, setFormError] = useState("")
   const [submitting, setSubmitting] = useState(false)
 
@@ -38,39 +37,17 @@ function LocationsPage() {
   async function handleCreate(event) {
     event.preventDefault()
     setFormError("")
-
-    const parsedLatitude = parseFloat(latitude)
-    const parsedLongitude = parseFloat(longitude)
-    const parsedRadius = parseInt(radius, 10)
-
-    if (Number.isNaN(parsedLatitude)) {
-      setFormError("Latitude must be a valid number, e.g. -1.286389")
-      return
-    }
-
-    if (Number.isNaN(parsedLongitude)) {
-      setFormError("Longitude must be a valid number, e.g. 36.817223")
-      return
-    }
-
-    if (Number.isNaN(parsedRadius) || parsedRadius <= 0) {
-      setFormError("Radius must be a positive whole number of meters")
-      return
-    }
-
     setSubmitting(true)
 
     try {
       await apiClient.post("/locations", {
         name,
-        latitude: parsedLatitude,
-        longitude: parsedLongitude,
-        allowed_radius_meters: parsedRadius,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
       })
       setName("")
       setLatitude("")
       setLongitude("")
-      setRadius("100")
       setShowForm(false)
       await fetchLocations()
     } catch (err) {
@@ -96,9 +73,9 @@ function LocationsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 p-6">
+    <main className="min-h-screen bg-slate-100 p-4 sm:p-6">
       <div className="max-w-3xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
           <div>
             <button
               onClick={() => navigate("/dashboard")}
@@ -108,7 +85,7 @@ function LocationsPage() {
             </button>
             <h1 className="text-lg font-semibold text-slate-800">Locations</h1>
           </div>
-          <button onClick={logout} className="text-sm text-slate-500">
+          <button onClick={logout} className="text-sm text-slate-500 self-start sm:self-auto">
             Log out
           </button>
         </div>
@@ -152,20 +129,6 @@ function LocationsPage() {
                 className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
                 required
               />
-              <div>
-                <label className="block text-xs text-slate-500 mb-1">
-                  Allowed radius (meters) — how far an employee can be from
-                  this point and still clock in
-                </label>
-                <input
-                  type="text"
-                  placeholder="100"
-                  value={radius}
-                  onChange={(e) => setRadius(e.target.value)}
-                  className="w-full border border-slate-300 rounded px-3 py-2 text-sm"
-                  required
-                />
-              </div>
               <button
                 type="submit"
                 disabled={submitting}
@@ -182,21 +145,20 @@ function LocationsPage() {
             {locations.map((location) => (
               <li
                 key={location.id}
-                className="flex justify-between items-center p-4"
+                className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center p-4"
               >
                 <div>
                   <p className="text-sm font-medium text-slate-800">
                     {location.name}
                   </p>
                   <p className="text-xs text-slate-500">
-                    {location.latitude}, {location.longitude} — radius{" "}
-                    {location.allowed_radius_meters}m —{" "}
+                    {location.latitude}, {location.longitude} —{" "}
                     {location.is_active ? "Active" : "Deactivated"}
                   </p>
                 </div>
                 <button
                   onClick={() => toggleActive(location)}
-                  className={`text-xs rounded px-3 py-1 ${
+                  className={`self-start sm:self-auto text-xs rounded px-3 py-1 ${
                     location.is_active
                       ? "bg-red-50 text-red-600"
                       : "bg-green-50 text-green-600"

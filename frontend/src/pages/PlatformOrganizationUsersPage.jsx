@@ -83,7 +83,7 @@ function PlatformOrganizationUsersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-900 p-6">
+    <main className="min-h-screen bg-slate-900 p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <Link to="/platform/organizations" className="text-sm text-slate-400">
@@ -110,86 +110,88 @@ function PlatformOrganizationUsersPage() {
         )}
 
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-slate-500">
-              <tr>
-                <th className="px-4 py-3 font-medium">Name</th>
-                <th className="px-4 py-3 font-medium">Email</th>
-                <th className="px-4 py-3 font-medium">Role</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td className="px-4 py-3 text-slate-700">
-                    {user.full_name || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">{user.email}</td>
-                  <td className="px-4 py-3 text-slate-600">{user.role}</td>
-                  <td className="px-4 py-3">
-                    {user.is_active ? (
-                      <span className="text-xs bg-green-50 text-green-600 rounded px-2 py-1">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="text-xs bg-red-50 text-red-600 rounded px-2 py-1">
-                        Deactivated
-                      </span>
-                    )}
-                    {user.must_change_password && (
-                      <span className="text-xs bg-amber-50 text-amber-700 rounded px-2 py-1 ml-2">
-                        Must change password
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {resettingId === user.id ? (
-                      <form
-                        onSubmit={(e) => handleResetSubmit(e, user.id)}
-                        className="flex items-center gap-2"
-                      >
-                        <input
-                          type="text"
-                          placeholder="New password"
-                          value={newPassword}
-                          onChange={(e) => setNewPassword(e.target.value)}
-                          className="border border-slate-300 rounded px-2 py-1 text-xs"
-                          required
-                          autoFocus
-                        />
-                        <button
-                          type="submit"
-                          disabled={resetSubmitting}
-                          className="text-xs rounded px-3 py-1 bg-slate-800 text-white disabled:opacity-50"
-                        >
-                          {resetSubmitting ? "Saving..." : "Save"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={cancelReset}
-                          className="text-xs text-slate-500"
-                        >
-                          Cancel
-                        </button>
-                      </form>
-                    ) : (
-                      <button
-                        onClick={() => startReset(user.id)}
-                        className="text-xs rounded px-3 py-1 bg-amber-50 text-amber-700"
-                      >
-                        Reset Password
-                      </button>
-                    )}
-                    {resettingId === user.id && resetError && (
-                      <p className="text-xs text-red-600 mt-1">{resetError}</p>
-                    )}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead className="bg-slate-50 text-left text-slate-500">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Name</th>
+                  <th className="px-4 py-3 font-medium">Email</th>
+                  <th className="px-4 py-3 font-medium">Role</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 font-medium"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td className="px-4 py-3 text-slate-700">
+                      {user.full_name || "—"}
+                    </td>
+                    <td className="px-4 py-3 text-slate-600">{user.email}</td>
+                    <td className="px-4 py-3 text-slate-600">{user.role}</td>
+                    <td className="px-4 py-3">
+                      {user.is_active ? (
+                        <span className="text-xs bg-green-50 text-green-600 rounded px-2 py-1">
+                          Active
+                        </span>
+                      ) : (
+                        <span className="text-xs bg-red-50 text-red-600 rounded px-2 py-1">
+                          Deactivated
+                        </span>
+                      )}
+                      {user.must_change_password && (
+                        <span className="text-xs bg-amber-50 text-amber-700 rounded px-2 py-1 ml-2">
+                          Must change password
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      {resettingId === user.id ? (
+                        <form
+                          onSubmit={(e) => handleResetSubmit(e, user.id)}
+                          className="flex flex-wrap items-center gap-2"
+                        >
+                          <input
+                            type="text"
+                            placeholder="New password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            className="border border-slate-300 rounded px-2 py-1 text-xs"
+                            required
+                            autoFocus
+                          />
+                          <button
+                            type="submit"
+                            disabled={resetSubmitting}
+                            className="text-xs rounded px-3 py-1 bg-slate-800 text-white disabled:opacity-50"
+                          >
+                            {resetSubmitting ? "Saving..." : "Save"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={cancelReset}
+                            className="text-xs text-slate-500"
+                          >
+                            Cancel
+                          </button>
+                        </form>
+                      ) : (
+                        <button
+                          onClick={() => startReset(user.id)}
+                          className="text-xs rounded px-3 py-1 bg-amber-50 text-amber-700"
+                        >
+                          Reset Password
+                        </button>
+                      )}
+                      {resettingId === user.id && resetError && (
+                        <p className="text-xs text-red-600 mt-1">{resetError}</p>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           {users.length === 0 && (
             <p className="text-sm text-slate-400 text-center py-6">
               No users found for this organization.

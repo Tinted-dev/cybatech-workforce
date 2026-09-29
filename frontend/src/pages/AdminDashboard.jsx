@@ -42,18 +42,22 @@ function AdminDashboard() {
   const onboardingComplete = hasLocation && hasEmployee
 
   return (
-    <main className="min-h-screen bg-slate-100 p-6">
+    <main className="min-h-screen bg-slate-100 p-4 sm:p-6">
       <div className="max-w-3xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-lg font-semibold text-slate-800">Admin Dashboard</h1>
-          <Link to="/employees" className="text-sm text-blue-600 ml-4">Manage Employees</Link>
-          <Link to="/locations" className="text-sm text-blue-600 ml-4">Manage Locations</Link>
-          <Link to="/attendance" className="text-sm text-blue-600 ml-4">View Attendance</Link>
-          <Link to="/departments" className="text-sm text-blue-600 ml-4">Manage Departments</Link>
-          <Link to="/change-password" state={{ voluntary: true }} className="text-sm text-blue-600 ml-4">Change Password</Link>
-          <button onClick={logout} className="text-sm text-slate-500 ml-4">
-            Log out
-          </button>
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-3">
+            <h1 className="text-lg font-semibold text-slate-800">Admin Dashboard</h1>
+            <button onClick={logout} className="text-sm text-slate-500">
+              Log out
+            </button>
+          </div>
+          <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+            <Link to="/employees" className="text-blue-600">Manage Employees</Link>
+            <Link to="/locations" className="text-blue-600">Manage Locations</Link>
+            <Link to="/attendance" className="text-blue-600">View Attendance</Link>
+            <Link to="/departments" className="text-blue-600">Manage Departments</Link>
+            <Link to="/change-password" state={{ voluntary: true }} className="text-blue-600">Change Password</Link>
+          </nav>
         </div>
 
         {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
@@ -67,9 +71,9 @@ function AdminDashboard() {
               A couple of quick steps before your team can start clocking in.
             </p>
             <ul className="space-y-2">
-              <li className="flex items-center gap-3">
+              <li className="flex flex-wrap items-center gap-3">
                 <span
-                  className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium ${
+                  className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium shrink-0 ${
                     hasLocation
                       ? "bg-green-100 text-green-700"
                       : "bg-slate-100 text-slate-400"
@@ -81,14 +85,14 @@ function AdminDashboard() {
                   Add your first location
                 </span>
                 {!hasLocation && (
-                  <Link to="/locations" className="text-xs text-blue-600 ml-auto">
+                  <Link to="/locations" className="text-xs text-blue-600 sm:ml-auto">
                     Add location →
                   </Link>
                 )}
               </li>
-              <li className="flex items-center gap-3">
+              <li className="flex flex-wrap items-center gap-3">
                 <span
-                  className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium ${
+                  className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium shrink-0 ${
                     hasEmployee
                       ? "bg-green-100 text-green-700"
                       : "bg-slate-100 text-slate-400"
@@ -100,7 +104,7 @@ function AdminDashboard() {
                   Add your first employee
                 </span>
                 {!hasEmployee && (
-                  <Link to="/employees" className="text-xs text-blue-600 ml-auto">
+                  <Link to="/employees" className="text-xs text-blue-600 sm:ml-auto">
                     Add employee →
                   </Link>
                 )}

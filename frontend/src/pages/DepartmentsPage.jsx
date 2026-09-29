@@ -65,9 +65,9 @@ function DepartmentsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 p-6">
+    <main className="min-h-screen bg-slate-100 p-4 sm:p-6">
       <div className="max-w-3xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
           <div>
             <button
               onClick={() => navigate("/dashboard")}
@@ -77,7 +77,7 @@ function DepartmentsPage() {
             </button>
             <h1 className="text-lg font-semibold text-slate-800">Departments</h1>
           </div>
-          <button onClick={logout} className="text-sm text-slate-500">
+          <button onClick={logout} className="text-sm text-slate-500 self-start sm:self-auto">
             Log out
           </button>
         </div>
@@ -121,7 +121,7 @@ function DepartmentsPage() {
             {departments.map((department) => (
               <li
                 key={department.id}
-                className="flex justify-between items-center p-4"
+                className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center p-4"
               >
                 <div>
                   <p className="text-sm font-medium text-slate-800">
@@ -133,7 +133,7 @@ function DepartmentsPage() {
                 </div>
                 <button
                   onClick={() => toggleActive(department)}
-                  className={`text-xs rounded px-3 py-1 ${
+                  className={`self-start sm:self-auto text-xs rounded px-3 py-1 ${
                     department.is_active
                       ? "bg-red-50 text-red-600"
                       : "bg-green-50 text-green-600"

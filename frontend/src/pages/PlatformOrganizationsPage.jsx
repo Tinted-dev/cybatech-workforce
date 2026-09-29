@@ -84,9 +84,9 @@ function PlatformOrganizationsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-900 p-6">
+    <main className="min-h-screen bg-slate-900 p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-wrap justify-between items-center gap-2 mb-6">
           <h1 className="text-lg font-semibold text-white">
             Platform — Organizations
           </h1>
@@ -159,58 +159,62 @@ function PlatformOrganizationsPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-slate-500">
-              <tr>
-                <th className="px-4 py-3 font-medium">Organization</th>
-                <th className="px-4 py-3 font-medium">Employees</th>
-                <th className="px-4 py-3 font-medium">Created</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {organizations.map((org) => (
-                <tr key={org.id}>
-                  <td className="px-4 py-3 text-slate-700">{org.name}</td>
-                  <td className="px-4 py-3 text-slate-600">{org.employee_count}</td>
-                  <td className="px-4 py-3 text-slate-500">
-                    {new Date(org.created_at + "Z").toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    {org.is_active ? (
-                      <span className="text-xs bg-green-50 text-green-600 rounded px-2 py-1">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="text-xs bg-red-50 text-red-600 rounded px-2 py-1">
-                        Suspended
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Link
-                      to={`/platform/organizations/${org.id}/users`}
-                      state={{ organizationName: org.name }}
-                      className="text-xs rounded px-3 py-1 bg-slate-100 text-slate-600 mr-2"
-                    >
-                      Users
-                    </Link>
-                    <button
-                      onClick={() => toggleActive(org)}
-                      className={`text-xs rounded px-3 py-1 ${
-                        org.is_active
-                          ? "bg-red-50 text-red-600"
-                          : "bg-green-50 text-green-600"
-                      }`}
-                    >
-                      {org.is_active ? "Suspend" : "Reactivate"}
-                    </button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[600px] text-sm">
+              <thead className="bg-slate-50 text-left text-slate-500">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Organization</th>
+                  <th className="px-4 py-3 font-medium">Employees</th>
+                  <th className="px-4 py-3 font-medium">Created</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 font-medium"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {organizations.map((org) => (
+                  <tr key={org.id}>
+                    <td className="px-4 py-3 text-slate-700">{org.name}</td>
+                    <td className="px-4 py-3 text-slate-600">{org.employee_count}</td>
+                    <td className="px-4 py-3 text-slate-500">
+                      {new Date(org.created_at + "Z").toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3">
+                      {org.is_active ? (
+                        <span className="text-xs bg-green-50 text-green-600 rounded px-2 py-1">
+                          Active
+                        </span>
+                      ) : (
+                        <span className="text-xs bg-red-50 text-red-600 rounded px-2 py-1">
+                          Suspended
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap gap-2">
+                        <Link
+                          to={`/platform/organizations/${org.id}/users`}
+                          state={{ organizationName: org.name }}
+                          className="text-xs rounded px-3 py-1 bg-slate-100 text-slate-600"
+                        >
+                          Users
+                        </Link>
+                        <button
+                          onClick={() => toggleActive(org)}
+                          className={`text-xs rounded px-3 py-1 ${
+                            org.is_active
+                              ? "bg-red-50 text-red-600"
+                              : "bg-green-50 text-green-600"
+                          }`}
+                        >
+                          {org.is_active ? "Suspend" : "Reactivate"}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </main>

@@ -104,9 +104,9 @@ function AttendancePage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 p-6">
+    <main className="min-h-screen bg-slate-100 p-4 sm:p-6">
       <div className="max-w-5xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
           <div>
             <button
               onClick={() => navigate("/dashboard")}
@@ -118,7 +118,7 @@ function AttendancePage() {
               Attendance History
             </h1>
           </div>
-          <button onClick={logout} className="text-sm text-slate-500">
+          <button onClick={logout} className="text-sm text-slate-500 self-start sm:self-auto">
             Log out
           </button>
         </div>
@@ -195,7 +195,7 @@ function AttendancePage() {
             type="button"
             onClick={exportCsv}
             disabled={attendance.length === 0}
-            className="ml-auto bg-green-600 text-white rounded px-4 py-1.5 text-sm disabled:opacity-50"
+            className="sm:ml-auto bg-green-600 text-white rounded px-4 py-1.5 text-sm disabled:opacity-50"
           >
             Export CSV
           </button>
@@ -205,48 +205,50 @@ function AttendancePage() {
           {loading ? (
             <p className="text-sm text-slate-500 p-6 text-center">Loading...</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-left text-slate-500">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Employee</th>
-                  <th className="px-4 py-3 font-medium">Department</th>
-                  <th className="px-4 py-3 font-medium">Clock In</th>
-                  <th className="px-4 py-3 font-medium">Clock Out</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {attendance.map((record) => (
-                  <tr key={record.id}>
-                    <td className="px-4 py-3 text-slate-700">
-                      {record.employee_full_name || record.employee_email || `#${record.employee_id}`}
-                    </td>
-                    <td className="px-4 py-3 text-slate-500">
-                      {record.department_name || "—"}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      {toLocalDate(record.clock_in_time).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      {record.clock_out_time
-                        ? toLocalDate(record.clock_out_time).toLocaleString()
-                        : "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      {record.clock_out_time ? (
-                        <span className="text-xs bg-slate-100 text-slate-600 rounded px-2 py-1">
-                          Completed
-                        </span>
-                      ) : (
-                        <span className="text-xs bg-green-50 text-green-600 rounded px-2 py-1">
-                          Clocked In
-                        </span>
-                      )}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-sm">
+                <thead className="bg-slate-50 text-left text-slate-500">
+                  <tr>
+                    <th className="px-4 py-3 font-medium">Employee</th>
+                    <th className="px-4 py-3 font-medium">Department</th>
+                    <th className="px-4 py-3 font-medium">Clock In</th>
+                    <th className="px-4 py-3 font-medium">Clock Out</th>
+                    <th className="px-4 py-3 font-medium">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {attendance.map((record) => (
+                    <tr key={record.id}>
+                      <td className="px-4 py-3 text-slate-700">
+                        {record.employee_full_name || record.employee_email || `#${record.employee_id}`}
+                      </td>
+                      <td className="px-4 py-3 text-slate-500">
+                        {record.department_name || "—"}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">
+                        {toLocalDate(record.clock_in_time).toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">
+                        {record.clock_out_time
+                          ? toLocalDate(record.clock_out_time).toLocaleString()
+                          : "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {record.clock_out_time ? (
+                          <span className="text-xs bg-slate-100 text-slate-600 rounded px-2 py-1">
+                            Completed
+                          </span>
+                        ) : (
+                          <span className="text-xs bg-green-50 text-green-600 rounded px-2 py-1">
+                            Clocked In
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
 
           {!loading && attendance.length === 0 && (

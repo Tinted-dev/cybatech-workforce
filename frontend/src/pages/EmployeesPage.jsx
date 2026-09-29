@@ -138,9 +138,9 @@ function EmployeesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 p-6">
+    <main className="min-h-screen bg-slate-100 p-4 sm:p-6">
       <div className="max-w-3xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
           <div>
             <button
               onClick={() => navigate("/dashboard")}
@@ -150,7 +150,7 @@ function EmployeesPage() {
             </button>
             <h1 className="text-lg font-semibold text-slate-800">Employees</h1>
           </div>
-          <button onClick={logout} className="text-sm text-slate-500">
+          <button onClick={logout} className="text-sm text-slate-500 self-start sm:self-auto">
             Log out
           </button>
         </div>
@@ -282,7 +282,7 @@ function EmployeesPage() {
                     </div>
                   </form>
                 ) : (
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                     <div>
                       <p className="text-sm font-medium text-slate-800">
                         {employee.full_name || employee.email}
@@ -296,7 +296,7 @@ function EmployeesPage() {
                         {employee.has_registered_device ? "Device bound" : "No device"}
                       </p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => startEdit(employee)}
                         className="text-xs rounded px-3 py-1 bg-slate-100 text-slate-600"

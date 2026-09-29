@@ -110,9 +110,9 @@ function EmployeeDashboard() {
   const isClockedIn = status !== null
 
   return (
-    <main className="min-h-screen bg-slate-100 p-6">
+    <main className="min-h-screen bg-slate-100 p-4 sm:p-6">
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-sm p-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
           <h1 className="text-lg font-semibold text-slate-800">My Attendance</h1>
           <div className="flex items-center gap-4">
             <Link to="/change-password" state={{ voluntary: true }} className="text-sm text-blue-600">
