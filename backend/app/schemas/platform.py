@@ -27,3 +27,20 @@ class CreateOrganizationRequest(BaseModel):
     organization_name: str
     admin_email: EmailStr
     admin_password: str
+
+
+class OrganizationUserSummary(BaseModel):
+    id: int
+    email: str
+    full_name: str | None = None
+    role: str
+    is_active: bool
+    must_change_password: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ResetUserPasswordRequest(BaseModel):
+    new_password: str

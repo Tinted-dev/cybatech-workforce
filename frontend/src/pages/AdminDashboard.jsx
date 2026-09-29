@@ -50,7 +50,8 @@ function AdminDashboard() {
           <Link to="/locations" className="text-sm text-blue-600 ml-4">Manage Locations</Link>
           <Link to="/attendance" className="text-sm text-blue-600 ml-4">View Attendance</Link>
           <Link to="/departments" className="text-sm text-blue-600 ml-4">Manage Departments</Link>
-          <button onClick={logout} className="text-sm text-slate-500">
+          <Link to="/change-password" state={{ voluntary: true }} className="text-sm text-blue-600 ml-4">Change Password</Link>
+          <button onClick={logout} className="text-sm text-slate-500 ml-4">
             Log out
           </button>
         </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 import apiClient from "../api/client"
 import { useAuth } from "../context/AuthContext"
 import { toLocalDate } from "../utils/formatDate"
@@ -113,9 +114,14 @@ function EmployeeDashboard() {
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-sm p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-lg font-semibold text-slate-800">My Attendance</h1>
-          <button onClick={logout} className="text-sm text-slate-500">
-            Log out
-          </button>
+          <div className="flex items-center gap-4">
+            <Link to="/change-password" state={{ voluntary: true }} className="text-sm text-blue-600">
+              Change Password
+            </Link>
+            <button onClick={logout} className="text-sm text-slate-500">
+              Log out
+            </button>
+          </div>
         </div>
 
         {error && <p className="text-sm text-red-600 mb-4">{error}</p>}

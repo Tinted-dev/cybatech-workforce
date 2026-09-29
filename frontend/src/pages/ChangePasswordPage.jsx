@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import apiClient from "../api/client"
 import { getErrorMessage } from "../utils/getErrorMessage"
 
@@ -9,7 +9,9 @@ function ChangePasswordPage() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const location = useLocation()
   const navigate = useNavigate()
+  const isVoluntary = location.state?.voluntary === true
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -40,7 +42,9 @@ function ChangePasswordPage() {
           Change Your Password
         </h1>
         <p className="text-sm text-slate-500 mb-6">
-          You must set a new password before continuing.
+          {isVoluntary
+            ? "Choose a new password for your account."
+            : "You must set a new password before continuing."}
         </p>
 
         {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
@@ -74,6 +78,16 @@ function ChangePasswordPage() {
         >
           {loading ? "Updating..." : "Update Password"}
         </button>
+
+        {isVoluntary && (
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+            className="w-full text-center text-sm text-slate-500 mt-3"
+          >
+            Cancel
+          </button>
+        )}
       </form>
     </main>
   )

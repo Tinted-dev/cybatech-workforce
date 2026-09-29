@@ -12,6 +12,8 @@ from app.schemas.platform import (
     PlatformTokenResponse,
     OrganizationSummary,
     CreateOrganizationRequest,
+    OrganizationUserSummary,
+    ResetUserPasswordRequest,
 )
 from app.core.security import verify_password, create_access_token, hash_password
 from app.core.dependencies import require_platform_admin
@@ -150,3 +152,49 @@ def update_organization_status(
         employee_count=employee_count,
         created_at=organization.created_at,
     )
+
+
+@router.get("/organizations/{organization_id}/users", response_model=list[OrganizationUserSummary])
+def list_organization_users(
+    organization_id: int,
+    db: Session = Depends(get_db),
+    _: dict = Depends(require_platform_admin),
+):
+    organization = db.query(Organization).filter(Organization.id == organization_id).first()
+    if not organization:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found")
+
+    users = (
+        db.query(User)
+        .filter(User.organization_id == organization_id)
+        .order_by(User.created_at.desc())
+        .all()
+    )
+    return users
+
+
+@router.post(
+    "/organizations/{organization_id}/users/{user_id}/reset-password",
+    response_model=OrganizationUserSummary,
+)
+def reset_organization_user_password(
+    organization_id: int,
+    user_id: int,
+    payload: ResetUserPasswordRequest,
+    db: Session = Depends(get_db),
+    _: dict = Depends(require_platform_admin),
+):
+    user = (
+        db.query(User)
+        .filter(User.id == user_id, User.organization_id == organization_id)
+        .first()
+    )
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    user.hashed_password = hash_password(payload.new_password)
+    user.must_change_password = True
+    db.commit()
+    db.refresh(user)
+
+    return user

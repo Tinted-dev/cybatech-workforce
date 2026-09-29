@@ -13,6 +13,7 @@ import AttendancePage from "./pages/AttendancePage"
 import DepartmentsPage from "./pages/DepartmentsPage"
 import PlatformLoginPage from "./pages/PlatformLoginPage"
 import PlatformOrganizationsPage from "./pages/PlatformOrganizationsPage"
+import PlatformOrganizationUsersPage from "./pages/PlatformOrganizationUsersPage"
 
 function Dashboard() {
   const { user } = useAuth()
@@ -75,6 +76,7 @@ function App() {
       />
       <Route path="/platform/login" element={<PlatformLoginPage />} />
       <Route path="/platform/organizations" element={<PlatformOrganizationsPage />} />
+      <Route path="/platform/organizations/:organizationId/users" element={<PlatformOrganizationUsersPage />} />
     </Routes>
   )
 }

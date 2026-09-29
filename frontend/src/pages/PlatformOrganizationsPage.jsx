@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import platformApiClient from "../api/platformClient"
 import { getErrorMessage } from "../utils/getErrorMessage"
 
@@ -189,6 +189,13 @@ function PlatformOrganizationsPage() {
                     )}
                   </td>
                   <td className="px-4 py-3">
+                    <Link
+                      to={`/platform/organizations/${org.id}/users`}
+                      state={{ organizationName: org.name }}
+                      className="text-xs rounded px-3 py-1 bg-slate-100 text-slate-600 mr-2"
+                    >
+                      Users
+                    </Link>
                     <button
                       onClick={() => toggleActive(org)}
                       className={`text-xs rounded px-3 py-1 ${
